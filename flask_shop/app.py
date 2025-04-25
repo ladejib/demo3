@@ -46,20 +46,47 @@ def product_list():
     return render_template('products.html', products=products)
 
 
+# @app.route('/add_to_cart/<int:product_id>')
+# def add_to_cart(product_id):
+#     if 'user' not in session:
+#         return redirect(url_for('login'))
+#     product = next((p for p in products if p['id'] == product_id), None)
+#     if product:
+#         session['cart'].append(product)
+#     return redirect(url_for('cart'))
+
+
 @app.route('/add_to_cart/<int:product_id>')
 def add_to_cart(product_id):
     if 'user' not in session:
         return redirect(url_for('login'))
+
     product = next((p for p in products if p['id'] == product_id), None)
+
     if product:
-        session['cart'].append(product)
+        cart = session.get('cart', [])
+        cart.append(product)
+        session['cart'] = cart  # update the session
+
     return redirect(url_for('cart'))
+
+
+# @app.route('/cart')
+# def cart():
+#     if 'user' not in session:
+#         return redirect(url_for('login'))
+#     return render_template('cart.html', cart=session.get('cart', []))
+
 
 @app.route('/cart')
 def cart():
     if 'user' not in session:
         return redirect(url_for('login'))
-    return render_template('cart.html', cart=session.get('cart', []))
+
+    cart = session.get('cart', [])
+    return render_template('cart.html', cart=cart)
+
+
 
 @app.route('/purchase')
 def purchase():

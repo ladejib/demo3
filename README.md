@@ -1,6 +1,8 @@
 # demo3
 
-docker build -t flask-app .
-docker run -p 5000:5000 flask-app
+docker build --no-cache -t flask-shop .
+docker run -p 5000:5000 flask-shop
+
+
 
 
