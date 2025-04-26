@@ -1,0 +1,5 @@
+resources:
+  - aws-secret.yaml
+  - playwright-job.yaml
+  - merge-job.yaml
+

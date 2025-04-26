@@ -1,0 +1,44 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: playwright-test
+spec:
+  completions: 5   # Number of shards
+  parallelism: 5
+  completionMode: Indexed
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: playwright
+        image: your-playwright-runner-image:latest
+        env:
+          - name: AWS_ACCESS_KEY_ID
+            valueFrom:
+              secretKeyRef:
+                name: aws-credentials
+                key: access_key
+          - name: AWS_SECRET_ACCESS_KEY
+            valueFrom:
+              secretKeyRef:
+                name: aws-credentials
+                key: secret_key
+          - name: AWS_DEFAULT_REGION
+            value: "us-east-1"
+          - name: S3_BUCKET
+            value: "your-bucket-name"
+          - name: S3_RESULTS_PREFIX
+            value: "playwright-results"
+          - name: S3_REPORTS_PREFIX
+            value: "playwright-reports"
+          - name: TOTAL_SHARDS
+            value: "5"
+        volumeMounts:
+          - name: git-sync-volume
+            mountPath: /tests
+      - name: git-sync
+        # same as git-sync container above
+      volumes:
+        - name: git-sync-volume
+          emptyDir: {}
+
