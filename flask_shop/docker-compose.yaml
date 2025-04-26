@@ -1,0 +1,30 @@
+
+services:
+  app:
+    build: .
+    container_name: flask-shop
+    ports:
+      - "5000:5000"
+    networks:
+      - testnet
+
+  tests:
+    image: mcr.microsoft.com/playwright:v1.52.0-jammy
+    container_name: playwright-tests
+    working_dir: /tests
+    volumes:
+      - ../test_playwright:/tests
+    networks:
+      - testnet
+    depends_on:
+      - app
+    entrypoint: >
+      sh -c "npm install &&
+             npx wait-on http://flask-shop:5000 &&
+             npx playwright test"
+
+    
+networks:
+  testnet:
+    driver: bridge
+
