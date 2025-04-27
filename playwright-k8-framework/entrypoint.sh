@@ -5,8 +5,14 @@ set -e
 # Assume tests are cloned into /tests directory by git-sync
 cd /tests
 
+# Kubernetes Indexed Jobs, so JOB_COMPLETION_INDEX starts at 0, 
+# but Playwright expects shards starting from 1.
+echo "[entrypoint] Calculating shard index..."
+SHARD_CURRENT=$((JOB_COMPLETION_INDEX + 1))
+
 # Run sharded tests
-npx playwright test --shard=${JOB_COMPLETION_INDEX}/${TOTAL_SHARDS}
+echo "[entrypoint] Running Playwright tests with shard ${SHARD_CURRENT}/${TOTAL_SHARDS}..."
+npx playwright test --shard=${SHARD_CURRENT}/${TOTAL_SHARDS}
 
 # Upload JSON results to S3
 if [ -f "playwright-report/results.json" ]; then
