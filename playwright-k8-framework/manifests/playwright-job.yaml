@@ -2,16 +2,18 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: playwright-test
+  namespace: playwright
 spec:
-  completions: 5   # Number of shards
-  parallelism: 5
+  completions: 2   # Number of shards
+  parallelism: 2
   completionMode: Indexed
   template:
     spec:
       restartPolicy: Never
       containers:
       - name: playwright
-        image: your-playwright-runner-image:latest
+        image: saifb/playwright-runner:latest
+        imagePullPolicy: IfNotPresent
         env:
           - name: AWS_ACCESS_KEY_ID
             valueFrom:
@@ -26,18 +28,35 @@ spec:
           - name: AWS_DEFAULT_REGION
             value: "us-east-1"
           - name: S3_BUCKET
-            value: "your-bucket-name"
+            value: "playwright_bucket_saif"
           - name: S3_RESULTS_PREFIX
             value: "playwright-results"
           - name: S3_REPORTS_PREFIX
             value: "playwright-reports"
           - name: TOTAL_SHARDS
             value: "5"
+          - name: GIT_SYNC_ROOT
+            value: /workspace
+          - name: GIT_SYNC_REPO
+            value: https://github.com/ladejib/demo3.git
+          - name: GIT_SYNC_BRANCH
+            value: main
+          - name: GIT_SYNC_WAIT
+            value: "30"
         volumeMounts:
           - name: git-sync-volume
-            mountPath: /tests
+            mountPath : /tests
       - name: git-sync
-        # same as git-sync container above
+        image: registry.k8s.io/git-sync/git-sync:v4.0.0
+        env:
+          - name: GIT_SYNC_REPO
+            value: https://github.com/ladejib/demo3.git
+          - name: GIT_SYNC_BRANCH
+            value: main
+          - name: GIT_SYNC_ROOT
+            value: /workspace
+          - name: GIT_SYNC_ONE_TIME
+            value: "true"  # clone once and exit
       volumes:
         - name: git-sync-volume
           emptyDir: {}

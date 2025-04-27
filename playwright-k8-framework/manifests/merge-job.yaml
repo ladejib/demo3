@@ -2,13 +2,14 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: playwright-merge-reports
+  namespace: playwright
 spec:
   template:
     spec:
       restartPolicy: Never
       containers:
       - name: merge-reports
-        image: mcr.microsoft.com/playwright:v1.43.1-jammy
+        image: mcr.microsoft.com/playwright:v1.50.0-noble
         command: ["/bin/sh", "-c"]
         args:
           - |

@@ -1,4 +1,4 @@
-IMAGE_NAME=your-dockerhub-username/playwright-runner
+IMAGE_NAME=saifb/playwright-runner
 TAG=latest
 
 build:
@@ -6,6 +6,9 @@ build:
 
 push:
 	docker push $(IMAGE_NAME):$(TAG)
+
+namespace:
+	kubectl create ns playwright
 
 deploy:
 	kubectl apply -k manifests/
