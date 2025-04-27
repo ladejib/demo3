@@ -14,6 +14,7 @@ SHARD_CURRENT=$((JOB_COMPLETION_INDEX + 1))
 echo "[entrypoint] Running Playwright tests with shard ${SHARD_CURRENT}/${TOTAL_SHARDS}..."
 npx playwright test --shard=${SHARD_CURRENT}/${TOTAL_SHARDS}
 
+echo "[entrypoint] Uploading the JSON Results to S3..."
 # Upload JSON results to S3
 if [ -f "playwright-report/results.json" ]; then
     echo "Uploading results.json to S3..."

@@ -36,7 +36,9 @@ spec:
           - name: JOB_COMPLETION_INDEX
             valueFrom:
               fieldRef:
-                fieldPath: metadata.annotations['batch.kubernetes.io/job-completion-index']  
+                apiVersion: v1
+                # fieldPath: metadata.labels['batch.kubernetes.io/job-completion-index']  
+                fieldPath: metadata.annotations['batch.kubernetes.io/job-completion-index']
           - name: TOTAL_SHARDS
             value: "2"
           - name: GIT_SYNC_ROOT
