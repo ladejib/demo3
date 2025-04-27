@@ -1,0 +1,40 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: playwright-merge-reports
+  namespace: playwright
+spec:
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: merge-reports
+        image: mcr.microsoft.com/playwright:v1.50.0-noble
+        command: ["/bin/sh", "-c"]
+        args:
+          - |
+            apt-get update && apt-get install -y awscli;
+            mkdir results;
+            aws s3 cp s3://${S3_BUCKET}/${S3_RESULTS_PREFIX}/ results/ --recursive;
+            npx playwright merge-reports results/*.json --reporter html;
+            aws s3 cp playwright-report/ s3://${S3_BUCKET}/${S3_FINAL_REPORT_PREFIX}/ --recursive;
+        env:
+          - name: AWS_ACCESS_KEY_ID
+            valueFrom:
+              secretKeyRef:
+                name: aws-credentials
+                key: access_key
+          - name: AWS_SECRET_ACCESS_KEY
+            valueFrom:
+              secretKeyRef:
+                name: aws-credentials
+                key: secret_key
+          - name: AWS_DEFAULT_REGION
+            value: "us-east-1"
+          - name: S3_BUCKET
+            value: "your-bucket-name"
+          - name: S3_RESULTS_PREFIX
+            value: "playwright-results"
+          - name: S3_FINAL_REPORT_PREFIX
+            value: "playwright-merged-report"
+
