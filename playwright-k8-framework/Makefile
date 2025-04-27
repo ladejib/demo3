@@ -2,7 +2,7 @@ IMAGE_NAME=saifb/playwright-runner
 TAG=latest
 
 build:
-	docker build -t $(IMAGE_NAME):$(TAG) .
+	docker build --no-cache -t $(IMAGE_NAME):$(TAG) .
 
 push:
 	docker push $(IMAGE_NAME):$(TAG)

@@ -37,7 +37,6 @@ spec:
             valueFrom:
               fieldRef:
                 apiVersion: v1
-                # fieldPath: metadata.labels['batch.kubernetes.io/job-completion-index']  
                 fieldPath: metadata.annotations['batch.kubernetes.io/job-completion-index']
           - name: TOTAL_SHARDS
             value: "2"
